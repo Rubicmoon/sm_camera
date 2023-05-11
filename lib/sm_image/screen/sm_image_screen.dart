@@ -21,8 +21,8 @@ class _SMImageState extends State<_SMImage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   late ImageCameraControllerCubit imageCameraControllerCubit;
 
-  late AnimationController _flashModeControlRowAnimationController;
-  late AnimationController _exposureModeControlRowAnimationController;
+  // late AnimationController _flashModeControlRowAnimationController;
+  // late AnimationController _exposureModeControlRowAnimationController;
   // late AnimationController _focusModeControlRowAnimationController;
   // late Animation<double> _flashModeControlRowAnimation;
   // late Animation<double> _exposureModeControlRowAnimation;
@@ -64,8 +64,8 @@ class _SMImageState extends State<_SMImage>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _flashModeControlRowAnimationController.dispose();
-    _exposureModeControlRowAnimationController.dispose();
+    // _flashModeControlRowAnimationController.dispose();
+    // _exposureModeControlRowAnimationController.dispose();
     super.dispose();
   }
 
