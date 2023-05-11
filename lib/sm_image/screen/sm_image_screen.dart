@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:sm_camera/sm_image/logic/image_camera_controller/image_camera_controller_cubit.dart';
+import 'package:sm_camera/sm_image/widget/camera_action_button.dart';
 import 'package:sm_camera/sm_image/widget/capture_button_widget.dart';
+import 'package:sm_camera/sm_image/widget/image_action_button.dart';
 
 class _SMImage extends StatefulWidget {
   const _SMImage();
@@ -20,11 +22,11 @@ class _SMImageState extends State<_SMImage>
   late ImageCameraControllerCubit imageCameraControllerCubit;
 
   late AnimationController _flashModeControlRowAnimationController;
-  late Animation<double> _flashModeControlRowAnimation;
   late AnimationController _exposureModeControlRowAnimationController;
-  late Animation<double> _exposureModeControlRowAnimation;
-  late AnimationController _focusModeControlRowAnimationController;
-  late Animation<double> _focusModeControlRowAnimation;
+  // late AnimationController _focusModeControlRowAnimationController;
+  // late Animation<double> _flashModeControlRowAnimation;
+  // late Animation<double> _exposureModeControlRowAnimation;
+  // late Animation<double> _focusModeControlRowAnimation;
 
   @override
   void initState() {
@@ -33,39 +35,47 @@ class _SMImageState extends State<_SMImage>
     imageCameraControllerCubit = context.read<ImageCameraControllerCubit>();
     imageCameraControllerCubit.initCameraModule();
 
-    _flashModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _flashModeControlRowAnimation = CurvedAnimation(
-      parent: _flashModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
-    _exposureModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _exposureModeControlRowAnimation = CurvedAnimation(
-      parent: _exposureModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
-    _focusModeControlRowAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
-      vsync: this,
-    );
-    _focusModeControlRowAnimation = CurvedAnimation(
-      parent: _focusModeControlRowAnimationController,
-      curve: Curves.easeInCubic,
-    );
+    // _flashModeControlRowAnimationController = AnimationController(
+    //   duration: const Duration(milliseconds: 300),
+    //   vsync: this,
+    // );
+    // _flashModeControlRowAnimation = CurvedAnimation(
+    //   parent: _flashModeControlRowAnimationController,
+    //   curve: Curves.easeInCubic,
+    // );
+    // _exposureModeControlRowAnimationController = AnimationController(
+    //   duration: const Duration(milliseconds: 300),
+    //   vsync: this,
+    // );
+    // _exposureModeControlRowAnimation = CurvedAnimation(
+    //   parent: _exposureModeControlRowAnimationController,
+    //   curve: Curves.easeInCubic,
+    // );
+    // _focusModeControlRowAnimationController = AnimationController(
+    //   duration: const Duration(milliseconds: 300),
+    //   vsync: this,
+    // );
+    // _focusModeControlRowAnimation = CurvedAnimation(
+    //   parent: _focusModeControlRowAnimationController,
+    //   curve: Curves.easeInCubic,
+    // );
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    imageCameraControllerCubit.dispose();
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.inactive) {
+      imageCameraControllerCubit.dispose();
+    } else if (state == AppLifecycleState.resumed) {
+      imageCameraControllerCubit.initCameraModule();
+    }
   }
 
   @override
@@ -76,11 +86,6 @@ class _SMImageState extends State<_SMImage>
         body:
             BlocBuilder<ImageCameraControllerCubit, ImageCameraControllerState>(
           builder: (context, cameraControllerState) {
-            print(
-                "cameraControllerState.imageFile: ${cameraControllerState.imageFile}");
-
-            print(
-                "cameraControllerState.reTakeImage: ${cameraControllerState.reTakeImage}");
             return cameraControllerState.controller == null ||
                     !cameraControllerState.controller!.value.isInitialized
                 ? const Center(
@@ -92,7 +97,7 @@ class _SMImageState extends State<_SMImage>
                         children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 5),
-                            child: ImageActionButtonsWidget(
+                            child: ImageActionButton(
                               onRetry: () {
                                 context
                                     .read<ImageCameraControllerCubit>()
@@ -111,6 +116,19 @@ class _SMImageState extends State<_SMImage>
                       )
                     : Column(
                         children: [
+                          CameraActionButton(
+                            onCameraChange: () {
+                              context
+                                  .read<ImageCameraControllerCubit>()
+                                  .changeCamera();
+                            },
+                            onFlashLight: () {
+                              context
+                                  .read<ImageCameraControllerCubit>()
+                                  .toggleFlash();
+                            },
+                            isFlashOn: cameraControllerState.isFlashOn,
+                          ),
                           CameraPreview(
                             cameraControllerState.controller!,
                             // child: LayoutBuilder(
@@ -151,57 +169,6 @@ class _SMImageState extends State<_SMImage>
           },
         ),
       ),
-    );
-  }
-}
-
-class ImageActionButtonsWidget extends StatelessWidget {
-  final void Function() onRetry;
-  final void Function() onOk;
-  const ImageActionButtonsWidget({
-    Key? key,
-    required this.onRetry,
-    required this.onOk,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        OutlinedButton(
-          style: ButtonStyle(
-            side: MaterialStateProperty.all(
-              const BorderSide(color: Colors.white),
-            ),
-          ),
-          onPressed: onRetry,
-          child: const Text(
-            "RETRY",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        OutlinedButton(
-          style: ButtonStyle(
-            side: MaterialStateProperty.all(
-              const BorderSide(color: Colors.white),
-            ),
-          ),
-          onPressed: onOk,
-          child: const Text(
-            "OK",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

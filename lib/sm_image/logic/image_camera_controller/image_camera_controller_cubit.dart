@@ -20,14 +20,18 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
   // double _currentScale = 1.0;
   // double _baseScale = 1.0;
 
+  //default value, when the available cameras loaded, then exact camera count will assign
+  int selectedCameraNumber = 0;
+  List<CameraDescription> cameras = [];
+
   void dispose() {
     if (_cameraController != null) {
       _cameraController!.dispose();
     }
+    return;
   }
 
   Future<void> initCameraModule({CameraDescription? cameraDescription}) async {
-    List<CameraDescription> cameras = [];
     if (cameraDescription == null) {
       cameras = await availableCameras();
     }
@@ -38,7 +42,8 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
     }
 
     //take the 1st camera from the list as primary camera
-    final primaryCamera = cameras.first;
+    selectedCameraNumber = 0;
+    final primaryCamera = cameras[selectedCameraNumber];
 
     final CameraController newCameraController = CameraController(
       cameraDescription ?? primaryCamera,
@@ -104,14 +109,19 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
     }
   }
 
-  Future<void> onNewCameraChanged(
-      CameraDescription newCameraDescription) async {
+  Future<void> changeCamera() async {
+    if (cameras.isEmpty || cameras.length == 1) {
+      ToastMessage.errorToast("No available camera to switch");
+      return;
+    }
     if (_cameraController != null) {
-      _cameraController!.setDescription(newCameraDescription);
+      //0 is back camera, 1 is front camera
+      selectedCameraNumber = selectedCameraNumber == 0 ? 1 : 0;
+      _cameraController!.setDescription(cameras[selectedCameraNumber]);
       emit(state.copyWith(controller: _cameraController));
       return;
     } else {
-      return initCameraModule(cameraDescription: newCameraDescription);
+      return initCameraModule(cameraDescription: cameras[0]);
     }
   }
 
@@ -141,6 +151,17 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
         imageFile: (state.imageFile = null),
         reTakeImage: true,
       ));
+    } else {
+      ToastMessage.errorToast("Unable to take image");
+    }
+  }
+
+  Future<void> toggleFlash() async {
+    if (_cameraController != null) {
+      await _cameraController!.setFlashMode(
+        state.isFlashOn ? FlashMode.off : FlashMode.torch,
+      );
+      emit(state.copyWith(isFlashOn: !state.isFlashOn));
     } else {
       ToastMessage.errorToast("Unable to take image");
     }

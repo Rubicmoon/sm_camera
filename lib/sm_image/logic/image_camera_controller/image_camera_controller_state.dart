@@ -6,10 +6,12 @@ class ImageCameraControllerState extends Equatable {
   final CameraController? controller;
   File? imageFile;
   final bool reTakeImage;
+  final bool isFlashOn;
   final bool isTakingPicture;
   ImageCameraControllerState({
     this.controller,
     this.imageFile,
+    this.isFlashOn = false,
     this.reTakeImage = false,
     this.isTakingPicture = false,
   });
@@ -18,6 +20,7 @@ class ImageCameraControllerState extends Equatable {
   List<Object> get props => [
         if (controller != null) {controller},
         if (imageFile != null) {imageFile},
+        isFlashOn,
         reTakeImage,
         isTakingPicture,
       ];
@@ -25,12 +28,14 @@ class ImageCameraControllerState extends Equatable {
   ImageCameraControllerState copyWith({
     CameraController? controller,
     File? imageFile,
+    bool? isFlashOn,
     bool? reTakeImage,
     bool? isTakingPicture,
   }) {
     return ImageCameraControllerState(
       controller: controller ?? this.controller,
       imageFile: imageFile ?? this.imageFile,
+      isFlashOn: isFlashOn ?? false,
       reTakeImage: reTakeImage ?? false,
       isTakingPicture: isTakingPicture ?? false,
     );
