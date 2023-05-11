@@ -104,14 +104,14 @@ class _SMImageState extends State<_SMImage>
                                     .reTakeImage();
                               },
                               onOk: () {
-                                Navigator.pop<File?>(
+                                Navigator.pop<XFile?>(
                                   context,
                                   cameraControllerState.imageFile,
                                 );
                               },
                             ),
                           ),
-                          Image.file(cameraControllerState.imageFile!),
+                          Image.file(File(cameraControllerState.imageFile!.path)),
                         ],
                       )
                     : Column(
@@ -174,8 +174,8 @@ class _SMImageState extends State<_SMImage>
 }
 
 class SMImagePicker {
-  Future<File?> captureImage(BuildContext context) async {
-    return await Navigator.push<File?>(
+  Future<XFile?> captureImage(BuildContext context) async {
+    return await Navigator.push<XFile?>(
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(

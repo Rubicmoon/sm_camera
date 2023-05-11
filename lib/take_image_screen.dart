@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:sm_camera/sm_image/screen/sm_image_screen.dart';
 
@@ -11,7 +12,7 @@ class TakeImageScreen extends StatefulWidget {
 }
 
 class _TakeImageScreenState extends State<TakeImageScreen> {
-  File? imageFile;
+  XFile? imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +46,7 @@ class _TakeImageScreenState extends State<TakeImageScreen> {
                   SizedBox(
                     height: 300,
                     width: 400,
-                    child: Image.file(imageFile!),
+                    child: Image.file(File(imageFile!.path)),
                   ),
                 ],
               )

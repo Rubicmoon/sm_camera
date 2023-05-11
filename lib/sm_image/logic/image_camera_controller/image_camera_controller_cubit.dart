@@ -134,7 +134,7 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
         ));
 
         final XFile file = await _cameraController!.takePicture();
-        emit(state.copyWith(imageFile: File(file.path)));
+        emit(state.copyWith(imageFile: file));
         return;
       } on CameraException catch (e) {
         ToastMessage.errorToast(e.toString());

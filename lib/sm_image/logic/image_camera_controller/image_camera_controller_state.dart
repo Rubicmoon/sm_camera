@@ -4,7 +4,7 @@ part of 'image_camera_controller_cubit.dart';
 // ignore: must_be_immutable
 class ImageCameraControllerState extends Equatable {
   final CameraController? controller;
-  File? imageFile;
+  XFile? imageFile;
   final bool reTakeImage;
   final bool isFlashOn;
   final bool isTakingPicture;
@@ -27,7 +27,7 @@ class ImageCameraControllerState extends Equatable {
 
   ImageCameraControllerState copyWith({
     CameraController? controller,
-    File? imageFile,
+    XFile? imageFile,
     bool? isFlashOn,
     bool? reTakeImage,
     bool? isTakingPicture,
