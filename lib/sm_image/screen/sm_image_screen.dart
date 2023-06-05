@@ -111,7 +111,8 @@ class _SMImageState extends State<_SMImage>
                               },
                             ),
                           ),
-                          Image.file(File(cameraControllerState.imageFile!.path)),
+                          Image.file(
+                              File(cameraControllerState.imageFile!.path)),
                         ],
                       )
                     : Column(
@@ -129,20 +130,22 @@ class _SMImageState extends State<_SMImage>
                             },
                             isFlashOn: cameraControllerState.isFlashOn,
                           ),
-                          CameraPreview(
-                            cameraControllerState.controller!,
-                            // child: LayoutBuilder(
-                            //   builder:
-                            //       (BuildContext context, BoxConstraints constraints) {
-                            //     return GestureDetector(
-                            //       behavior: HitTestBehavior.opaque,
-                            //       onScaleStart: _handleScaleStart,
-                            //       onScaleUpdate: _handleScaleUpdate,
-                            //       onTapDown: (TapDownDetails details) =>
-                            //           onViewFinderTap(details, constraints),
-                            //     );
-                            //   },
-                            // ),
+                          Expanded(
+                            child: CameraPreview(
+                              cameraControllerState.controller!,
+                              // child: LayoutBuilder(
+                              //   builder:
+                              //       (BuildContext context, BoxConstraints constraints) {
+                              //     return GestureDetector(
+                              //       behavior: HitTestBehavior.opaque,
+                              //       onScaleStart: _handleScaleStart,
+                              //       onScaleUpdate: _handleScaleUpdate,
+                              //       onTapDown: (TapDownDetails details) =>
+                              //           onViewFinderTap(details, constraints),
+                              //     );
+                              //   },
+                              // ),
+                            ),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(10),
