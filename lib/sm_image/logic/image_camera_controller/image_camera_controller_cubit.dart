@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -14,9 +12,9 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
   CameraController? _cameraController;
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
-  // double _currentExposureOffset = 0.0;
   double _minAvailableZoom = 1.0;
   double _maxAvailableZoom = 1.0;
+  // double _currentExposureOffset = 0.0;
   // double _currentScale = 1.0;
   // double _baseScale = 1.0;
 
