@@ -61,22 +61,23 @@ class _SMImageState extends State<_SMImage>
     // );
   }
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    // _flashModeControlRowAnimationController.dispose();
-    // _exposureModeControlRowAnimationController.dispose();
-    super.dispose();
-  }
+  //TODO:Need to check
+  // @override
+  // void dispose() {
+  //   WidgetsBinding.instance.removeObserver(this);
+  //   // _flashModeControlRowAnimationController.dispose();
+  //   // _exposureModeControlRowAnimationController.dispose();
+  //   super.dispose();
+  // }
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.inactive) {
-      imageCameraControllerCubit.dispose();
-    } else if (state == AppLifecycleState.resumed) {
-      imageCameraControllerCubit.initCameraModule();
-    }
-  }
+  // @override
+  // void didChangeAppLifecycleState(AppLifecycleState state) {
+  //   if (state == AppLifecycleState.inactive) {
+  //     imageCameraControllerCubit.dispose();
+  //   } else if (state == AppLifecycleState.resumed) {
+  //     imageCameraControllerCubit.initCameraModule();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
