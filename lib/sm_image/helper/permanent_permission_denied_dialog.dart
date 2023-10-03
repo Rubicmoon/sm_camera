@@ -8,7 +8,6 @@ Future<bool?> showPermanentPermissionDeniedHandlerDialog(
 }) async =>
     await showDialog<bool>(
       context: context,
-      useRootNavigator: false,
       builder: (_) => AlertDialog.adaptive(
         content: Text(
           message,
