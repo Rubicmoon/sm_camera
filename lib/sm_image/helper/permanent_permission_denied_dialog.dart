@@ -21,6 +21,7 @@ Future<bool?> showPermanentPermissionDeniedHandlerDialog(
               style: const TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Colors.black,
+                fontSize: 12,
               ),
             ),
           ),
@@ -34,6 +35,7 @@ Future<bool?> showPermanentPermissionDeniedHandlerDialog(
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 color: Colors.red,
+                fontSize: 12,
               ),
             ),
           ),
