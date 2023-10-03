@@ -133,6 +133,9 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
       return;
     }
     if (_cameraController != null) {
+      //Turn off the flash if active
+      await toggleFlash(enable: false);
+      
       //0 is back camera, 1 is front camera
       selectedCameraNumber = selectedCameraNumber == 0 ? 1 : 0;
       await _cameraController!.setDescription(cameras[selectedCameraNumber]);
