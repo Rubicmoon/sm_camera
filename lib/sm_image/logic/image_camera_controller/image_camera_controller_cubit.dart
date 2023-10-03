@@ -148,6 +148,7 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
       try {
         emit(state.copyWith(isTakingPicture: true));
         final XFile file = await _cameraController!.takePicture();
+        await toggleFlash(enable: false);
         emit(state.copyWith(imageFile: file));
         return;
       } on CameraException catch (e) {
@@ -167,12 +168,17 @@ class ImageCameraControllerCubit extends Cubit<ImageCameraControllerState> {
     }
   }
 
-  Future<void> toggleFlash() async {
+  Future<void> toggleFlash({bool? enable}) async {
     if (_cameraController != null) {
-      await _cameraController!.setFlashMode(
-        state.isFlashOn ? FlashMode.off : FlashMode.torch,
-      );
-      emit(state.copyWith(isFlashOn: !state.isFlashOn));
+      late bool enableflash;
+      if (enable != null) {
+        enableflash = enable;
+      } else {
+        enableflash = !state.isFlashOn;
+      }
+      await _cameraController!
+          .setFlashMode(enableflash ? FlashMode.torch : FlashMode.off);
+      emit(state.copyWith(isFlashOn: enableflash));
     } else {
       ToastMessage.errorToast("Unable to take image");
     }

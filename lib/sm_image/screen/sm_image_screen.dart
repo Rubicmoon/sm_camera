@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:camera/camera.dart';
+import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:sm_camera/sm_image/helper/permanent_permission_denied_dialog.dart';
 import 'package:sm_camera/sm_image/logic/image_camera_controller/image_camera_controller_cubit.dart';
 import 'package:sm_camera/sm_image/widget/camera_action_button.dart';
 import 'package:sm_camera/sm_image/widget/capture_button_widget.dart';
@@ -90,44 +92,18 @@ class _SMImageState extends State<_SMImage>
           },
           listener: (_, cameraControllerState) async {
             if (cameraControllerState.cameraPermanentlyDenied) {
-              await showDialog<bool>(
-                context: context,
-                useRootNavigator: false,
-                builder: (_) => AlertDialog.adaptive(
-                  content: const Text(
-                      "Camera permission has been permanently denied. Please open the settings to grant the Camera permission."),
-                  actions: [
-                    OutlinedButton(
-                      onPressed: () async {
-                        await openAppSettings().whenComplete(
-                          () =>
-                              //close the dialog
-                              Navigator.pop(context, true),
-                        );
-                      },
-                      child: const Text(
-                        "Open setting",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                    OutlinedButton(
-                      onPressed: () {
+              await showPermanentPermissionDeniedHandlerDialog(
+                context,
+                message:
+                    "Camera permission has been permanently denied. Please open the settings to grant the Camera permission.",
+                openSettingsButtonText: "Open setting",
+                onOpenSettingsPressed: () async {
+                  await openAppSettings().whenComplete(
+                    () =>
                         //close the dialog
-                        Navigator.pop(context, true);
-                      },
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                        Navigator.pop(context, true),
+                  );
+                },
               ).then((value) {
                 if (value != null) {
                   //close the screen
@@ -165,28 +141,38 @@ class _SMImageState extends State<_SMImage>
                               },
                             ),
                           ),
-                          Image.file(
-                              File(cameraControllerState.imageFile!.path)),
+                          Expanded(
+                            child: EasyImageView(
+                              doubleTapZoomable: true,
+                              imageProvider: FileImage(
+                                File(cameraControllerState.imageFile!.path),
+                              ),
+                            ),
+                          ),
                         ],
                       )
                     : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          CameraActionButton(
-                            onCameraChange: () {
-                              context
-                                  .read<ImageCameraControllerCubit>()
-                                  .changeCamera();
-                            },
-                            onFlashLight: () {
-                              context
-                                  .read<ImageCameraControllerCubit>()
-                                  .toggleFlash();
-                            },
-                            isFlashOn: cameraControllerState.isFlashOn,
-                          ),
                           Expanded(
                             child: CameraPreview(
                               cameraControllerState.controller!,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: CameraActionButton(
+                                  onCameraChange: () {
+                                    context
+                                        .read<ImageCameraControllerCubit>()
+                                        .changeCamera();
+                                  },
+                                  onFlashLight: () {
+                                    context
+                                        .read<ImageCameraControllerCubit>()
+                                        .toggleFlash();
+                                  },
+                                  isFlashOn: cameraControllerState.isFlashOn,
+                                ),
+                              ),
                             ),
                           ),
                           Padding(

@@ -45,7 +45,7 @@ class ImageCameraControllerState extends Equatable {
     return ImageCameraControllerState(
       controller: controller ?? this.controller,
       imageFile: imageFile,
-      isFlashOn: isFlashOn ?? false,
+      isFlashOn: isFlashOn ?? this.isFlashOn,
       reTakeImage: reTakeImage ?? false,
       isTakingPicture: isTakingPicture ?? false,
       cameraFailed: cameraFailed ?? false,

@@ -28,7 +28,7 @@ class CameraActionButton extends StatelessWidget {
         IconButton(
           onPressed: onFlashLight,
           icon: Icon(
-            isFlashOn ? Icons.flash_off : Icons.flash_on,
+            isFlashOn ? Icons.flash_on : Icons.flash_off,
             color: Colors.white,
           ),
         ),
