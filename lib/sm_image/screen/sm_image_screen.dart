@@ -1,10 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:permission_handler/permission_handler.dart';
 import 'package:sm_camera/sm_image/logic/image_camera_controller/image_camera_controller_cubit.dart';
 import 'package:sm_camera/sm_image/widget/camera_action_button.dart';
 import 'package:sm_camera/sm_image/widget/capture_button_widget.dart';
@@ -19,7 +17,8 @@ class _SMImage extends StatefulWidget {
 
 class _SMImageState extends State<_SMImage>
     with WidgetsBindingObserver, TickerProviderStateMixin {
-  late ImageCameraControllerCubit imageCameraControllerCubit;
+  late ImageCameraControllerCubit imageCameraControllerCubit =
+      context.read<ImageCameraControllerCubit>();
 
   // late AnimationController _flashModeControlRowAnimationController;
   // late AnimationController _exposureModeControlRowAnimationController;
@@ -32,7 +31,7 @@ class _SMImageState extends State<_SMImage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    imageCameraControllerCubit = context.read<ImageCameraControllerCubit>();
+
     imageCameraControllerCubit.initCameraModule();
 
     // _flashModeControlRowAnimationController = AnimationController(
@@ -62,13 +61,13 @@ class _SMImageState extends State<_SMImage>
   }
 
   //TODO:Need to check
-  // @override
-  // void dispose() {
-  //   WidgetsBinding.instance.removeObserver(this);
-  //   // _flashModeControlRowAnimationController.dispose();
-  //   // _exposureModeControlRowAnimationController.dispose();
-  //   super.dispose();
-  // }
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    // _flashModeControlRowAnimationController.dispose();
+    // _exposureModeControlRowAnimationController.dispose();
+    super.dispose();
+  }
 
   // @override
   // void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -84,8 +83,62 @@ class _SMImageState extends State<_SMImage>
     return SafeArea(
       child: Scaffold(
         backgroundColor: Colors.black,
-        body:
-            BlocBuilder<ImageCameraControllerCubit, ImageCameraControllerState>(
+        body: BlocConsumer<ImageCameraControllerCubit,
+            ImageCameraControllerState>(
+          buildWhen: (previous, current) {
+            return !current.cameraFailed;
+          },
+          listener: (_, cameraControllerState) async {
+            if (cameraControllerState.cameraPermanentlyDenied) {
+              await showDialog<bool>(
+                context: context,
+                useRootNavigator: false,
+                builder: (_) => AlertDialog.adaptive(
+                  content: const Text(
+                      "Camera permission has been permanently denied. Please open the settings to grant the Camera permission."),
+                  actions: [
+                    OutlinedButton(
+                      onPressed: () async {
+                        await openAppSettings().whenComplete(
+                          () =>
+                              //close the dialog
+                              Navigator.pop(context, true),
+                        );
+                      },
+                      child: const Text(
+                        "Open setting",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        //close the dialog
+                        Navigator.pop(context, true);
+                      },
+                      child: const Text(
+                        "Cancel",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ).then((value) {
+                if (value != null) {
+                  //close the screen
+                  Navigator.pop(context);
+                }
+              });
+            } else if (cameraControllerState.cameraDenied ||
+                cameraControllerState.cameraFailed) {
+              Navigator.pop(context);
+            }
+          },
           builder: (context, cameraControllerState) {
             return cameraControllerState.controller == null ||
                     !cameraControllerState.controller!.value.isInitialized
@@ -134,18 +187,6 @@ class _SMImageState extends State<_SMImage>
                           Expanded(
                             child: CameraPreview(
                               cameraControllerState.controller!,
-                              // child: LayoutBuilder(
-                              //   builder:
-                              //       (BuildContext context, BoxConstraints constraints) {
-                              //     return GestureDetector(
-                              //       behavior: HitTestBehavior.opaque,
-                              //       onScaleStart: _handleScaleStart,
-                              //       onScaleUpdate: _handleScaleUpdate,
-                              //       onTapDown: (TapDownDetails details) =>
-                              //           onViewFinderTap(details, constraints),
-                              //     );
-                              //   },
-                              // ),
                             ),
                           ),
                           Padding(
@@ -179,7 +220,7 @@ class _SMImageState extends State<_SMImage>
 
 class SMImagePicker {
   Future<XFile?> captureImage(BuildContext context) async {
-    return await Navigator.push<XFile?>(
+    return Navigator.push<XFile?>(
       context,
       MaterialPageRoute(
         builder: (context) => BlocProvider(
